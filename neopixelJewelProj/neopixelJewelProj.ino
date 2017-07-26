@@ -1,3 +1,6 @@
+/*
+ * ANSWER KEY
+ */
 #include <Adafruit_NeoPixel.h>
 //define constants values
 #define ARDUINO_PIN_NUMBER 6
@@ -36,21 +39,35 @@ void setup() {
 void loop() {
   // experiment with the brightness value here!
   jewel.setBrightness(2);
-  //call your animations here to make them run!
-  centerBlinkExample();
+
+  /*
+   *  EXAMPLES
+   *  Uncomment these functions, one at a time, or try them in combos!
+  */
+  //centerBlinkExample();
   //arrayBlinkExample(PINK);
   //setAllPixelColorsExample(BLUE, 1000);
-  //setFewPixelColorsExample(RAINBOW, 1000);
-  //createHeartShape(RED);
+  //setFewPixelColorsExample(RAINBOW, 1000); // Note: Rainbow is an array of colors, not a single color!
+  /*
+   *  EXERCISES
+   *  Write these functions, using the knowledge from the example functions above
+  */
+  /* Display a heart shape on the NeoPixel */
+  //createHeartShape(RED, 1000);
+  /* Blink the heart shape on and off twice  */
+  /* HINT: take advantage of the createHeartShape() function! */
   //heartBlink(PINK, 1000);
+  /* Send a color from one side of the jewel, through the middle, to the other side. */
   //wave(VIOLET, 1000);
-  //counterBlink(RED);
-  //explosion(GREEN, 1000);
-}
+  /* Use centerBlink() and alternateBlink() (provided below) to create an explosion animation */
+  //explosion(GREEN);
 
-//******************************************************************************************************
-// Utility functions -- call these functions from inside the execution loop to create desired animation
-//******************************************************************************************************
+  /* Blink each pixel on ring increasing number, first pixel blinks once, second twice and so one */
+  //counterBlink(RED);
+}
+//**********************************************************
+// Example functions
+//**********************************************************
 /*
 Slowly blink the center pixel
  */
@@ -61,13 +78,11 @@ void centerBlinkExample() {
   jewel.show();
   // You must add a delay before turning off to pixel, otherwise it will turn off right away! Here 1000ms = 1sec delay
   delay(1000);
-
   //Repeat the step now to blink
   jewel.setPixelColor(0, OFF);
   jewel.show();
   delay(1000);
 }
-
 /*
 Blink each pixel in the array starting from center one
  */
@@ -77,14 +92,12 @@ void arrayBlinkExample(uint32_t color) {
     jewel.setPixelColor(pixelIndex, color);
     delay(500);
     jewel.show();
-
     // turning the pixel off before on-ing the next to show blink
     jewel.setPixelColor(pixelIndex, OFF);
     delay(500);
     jewel.show();
   }
 }
-
 /*
 Set all pixels to provided color for given time
  */
@@ -96,7 +109,6 @@ void setAllPixelColorsExample(uint32_t color, long delayTimeInMs) {
   jewel.show();
   delay(delayTimeInMs);
 }
-
 /*
 Set all pixels to provided color for given time
  */
@@ -108,7 +120,9 @@ void setFewPixelColorsExample(uint32_t colors[], long delayTimeInMs) {
   jewel.show();
   delay(delayTimeInMs);
 }
-
+//**********************************************************
+// Exercises - complete these functions on your own! :P
+//**********************************************************
 /*
  Display shape of heart lighting up required pixels in color of your choice
  */
@@ -126,17 +140,26 @@ void heartBlink(uint32_t color, long delayTimeInMs) {
   createHeartShape(color, delayTimeInMs);
   setFewPixelColorsExample(ALL_OFF, delayTimeInMs);
 }
-/* Use the heartBlink() function to simulate a heartbeat
- - two beats each lasting a third of the given delay time
- - pause for entire given delay time
-*/
-void heartbeat(uint32_t color, long delayTimeInMs) {
-  heartBlink(color, delayTimeInMs/3);
-  heartBlink(color, delayTimeInMs/3);
-  delay(delayTimeInMs);
+/*
+ WaveExample function using setAllPixelColorsExamples()
+ Sends a color from one side of the jewel, through the middle, to the other side.
+ */
+void wave(uint32_t color, long delayTimeInMs) {
+  // set pixels 1, 2 (one side of jewel)
+  uint32_t firstStripeColors[7] = {OFF, color, color, OFF, OFF, OFF, OFF};
+  setFewPixelColorsExample(firstStripeColors, delayTimeInMs);
+
+  // set pixels 0, 3, 6 (middle of jewel)
+  uint32_t secondStripeColors[7] = {color, OFF, OFF, color, OFF, OFF, color};
+  setFewPixelColorsExample(secondStripeColors, delayTimeInMs);
+
+  // set pixels 4, 5 (other side of jewel)
+  uint32_t thirdStripeColors[7] = {OFF, OFF, OFF, OFF, color, color, OFF};
+  setFewPixelColorsExample(thirdStripeColors, delayTimeInMs);
 }
-/* Make the center pixel blink
-*/
+/*
+ *  Make the center pixel blink
+ */
 void centerBlink(uint32_t color, long delayTimeInMs) {
   uint32_t centerOnly[7] = {color, OFF, OFF, OFF, OFF, OFF, OFF};
   setFewPixelColorsExample(centerOnly, delayTimeInMs);
@@ -152,52 +175,33 @@ void alternateBlink(uint32_t color, long delayTimeInMs) {
   uint32_t theOtherEveryOther[7] = {color, OFF, color, OFF, color, OFF, color};
   setFewPixelColorsExample(theOtherEveryOther, delayTimeInMs);
 }
-/* Use centerBlink() and alternateBlink() to create an explosion animation
+/*
+ *  Use centerBlink() and alternateBlink() to create an explosion animation
  */
-void explosion(uint32_t color, long delayTimeInMs) {
+void explosion(uint32_t color) {
   for (uint8_t iteration = 0; iteration < 4; iteration++) {
-    centerBlink(color, delayTimeInMs);
+    centerBlink(color, 100);
   }
   for (uint8_t iteration = 0; iteration < 10; iteration++) {
-    alternateBlink(color, delayTimeInMs);
+    alternateBlink(color, 100);
   }
 }
-
 /*
- Blink each pixel on ring increating number, first pixel blinks once, second twice and so one
+ Blink each pixel on ring increasing number, first pixel blinks once, second twice and so one
  */
 void counterBlink(uint32_t color) {
   for (uint8_t pixelIndex = 0; pixelIndex < NUM_JEWEL_PIXELS; pixelIndex++) {
-    for (uint8_t blink = 0; blink <= pixelIndex+1; blink++) {
+    for (uint8_t blink = 0; blink < pixelIndex+1; blink++) {
       jewel.setPixelColor(pixelIndex, color);
       delay(500);
       jewel.show();
-      
+
       jewel.setPixelColor(pixelIndex, OFF);
       delay(500);
       jewel.show();
    }
   }
 }
-
-/*
- WaveExample function using setAllPixelColorsExamples()
- Sends a color from one side of the jewel, through the middle, to the other side.
- */
-void wave(uint32_t color, long delayTimeInMs) {
-  // set pixels 1, 2 (one side of jewel)
-  uint32_t firstStripeColors[7] = {OFF, color, color, OFF, OFF, OFF, OFF};
-  setFewPixelColorsExample(firstStripeColors, delayTimeInMs);
-  
-  // set pixels 0, 3, 6 (middle of jewel)
-  uint32_t secondStripeColors[7] = {color, OFF, OFF, color, OFF, OFF, color};
-  setFewPixelColorsExample(secondStripeColors, delayTimeInMs);
-  
-  // set pixels 4, 5 (other side of jewel)
-  uint32_t thirdStripeColors[7] = {OFF, OFF, OFF, OFF, color, color, OFF};
-  setFewPixelColorsExample(thirdStripeColors, delayTimeInMs);
-}
-
 /*
  *  Tinker with your animations:
  - experiment with changing brightness during of your animations! (Hint: modify the brightness value in paramters)
